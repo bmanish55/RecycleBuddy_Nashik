@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecycleBuddy Nashik</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Variables for Theming */
+        :root {
+            --color-primary-green: #2ecc71;
+            --color-secondary-green: #27ae60;
+            --color-light-teal: #1abc9c;
+            --color-dark-teal: #16a085;
+            --color-background-light: #ecf0f1;
+            --color-background-dark: #2c3e50;
+            --color-text-light: #2c3e50;
+            --color-text-dark: #ecf0f1;
+            --color-card-light: rgba(255, 255, 255, 0.2);
+            --color-card-dark: rgba(0, 0, 0, 0.2);
+            --color-shadow-light: rgba(0, 0, 0, 0.1);
+            --color-shadow-dark: rgba(255, 255, 255, 0.05);
+            --color-neumorphism-light: #ecf0f1;
+            --color-neumorphism-shadow1-light: #b4c3c3;
+            --color-neumorphism-shadow2-light: #ffffff;
+            --color-neumorphism-dark: #34495e;
+            --color-neumorphism-shadow1-dark: #2c3e50;
+            --color-neumorphism-shadow2-dark: #3c546a;
+            --font-primary: 'Poppins', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        /* Dark Mode Styling */
+        body.dark-mode {
+            background: var(--color-background-dark);
+            color: var(--color-text-dark);
+            --color-background: var(--color-background-dark);
+            --color-text: var(--color-text-dark);
+            --color-card-bg: var(--color-card-dark);
+            --color-neumorphism-bg: var(--color-neumorphism-dark);
+            --color-neumorphism-shadow1: var(--color-neumorphism-shadow1-dark);
+            --color-neumorphism-shadow2: var(--color-neumorphism-shadow2-dark);
+        }
+
+        body {
+            font-family: var(--font-primary);
+            margin: 0;
+            padding: 0;
+            background: var(--color-background-light);
+            color: var(--color-text-light);
+            --color-background: var(--color-background-light);
+            --color-text: var(--color-text-light);
+            --color-card-bg: var(--color-card-light);
+            --color-neumorphism-bg: var(--color-neumorphism-light);
+            --color-neumorphism-shadow1: var(--color-neumorphism-shadow1-dark);
+            --color-neumorphism-shadow2: var(--color-neumorphism-shadow2-dark);
+            transition: background var(--transition-speed), color var(--transition-speed);
+            overflow-x: hidden;
+        }
+        
+        /* Custom Cursor */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            transition: width 0.3s, height 0.3s, background 0.3s;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-primary-green);
+            transition: transform 0.1s linear;
+        }
+
+        .cursor-outline {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--color-primary-green);
+            transition: transform 0.1s ease-out, border-color 0.3s;
+        }
+
+        /* General Styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        h1, h2, h3 {
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 2rem;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        #hero {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            color: white;
+            padding: 0 1rem;
+            overflow: hidden;
+            background: linear-gradient(45deg, var(--color-primary-green), var(--color-light-teal), var(--color-dark-teal));
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-float 15s infinite ease-in-out;
+        }
+        
+        @keyframes particle-float {
+            0% { transform: translateY(0) scale(1); opacity: 0.5; }
+            50% { transform: translateY(-50vh) scale(1.2); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 0.5; }
+        }
+
+        .hero-content {
+            z-index: 10;
+        }
+
+        .hero-content h1, .hero-content p {
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fade-in-up 1s forwards;
+            animation-delay: 0.5s;
+        }
+
+        .hero-content p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            animation-delay: 0.7s;
+        }
+
+        @keyframes fade-in-up {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(90deg, #b4e8c5, #ffffff, #b4e8c5);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: text-shine 3s linear infinite;
+        }
+
+        @keyframes text-shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Search Input */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: fade-in-scale 1s forwards 1s;
+        }
+        
+        /* FIX: Added the missing keyframe for the search box animation */
+        @keyframes fade-in-scale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: all var(--transition-speed);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Search Suggestions */
+        #suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-top: 1rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            z-index: 50;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none; /* Initially hidden */
+        }
+        
+        .suggestion-item {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            color: var(--color-text);
+            transition: background-color var(--transition-speed);
+        }
+
+        .suggestion-item:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Buttons */
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all var(--transition-speed) ease-in-out;
+            cursor: pointer;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .area-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .color-selector {
+            position: relative;
+        }
+        
+        .color-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 5px;
+            background: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 0.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.selected {
+            border-color: white;
+        }
+        
+        /* Waste Classification Cards - Glass-morphism */
+        #cards {
+            background: var(--color-background);
+            transition: background var(--transition-speed);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        .card.is-visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.2);
+        }
+        
+        .card .icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #f0f0f0, #d9d9d9);
+            box-shadow: 8px 8px 16px #c4c4c4, -8px -8px 16px #ffffff;
+            transition: all var(--transition-speed);
+            color: #555;
+        }
+
+        body.dark-mode .card .icon {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            box-shadow: 8px 8px 16px #22303e, -8px -8px 16px #46627e;
+        }
+        
+        .card:hover .icon {
+            box-shadow: inset 5px 5px 10px #c4c4c4, inset -5px -5px 10px #ffffff;
+        }
+
+        body.dark-mode .card:hover .icon {
+            box-shadow: inset 5px 5px 10px #22303e, inset -5px -5px 10px #46627e;
+        }
+
+        /* Results Display */
+        #results {
+            background: var(--color-background);
+            transition: background var(--transition-speed);
+        }
+        
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transform: translateX(-50px);
+            opacity: 0;
+        }
+
+        .result-item.is-visible {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .bin-illustration {
+            width: 150px;
+            height: auto;
+            filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        .progress-bar {
+            background-color: #eee;
+            border-radius: 50px;
+            height: 20px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            transition: width 1s ease-in-out;
+            width: 0%;
+        }
+
+        .message-box {
+            background: linear-gradient(45deg, #f0f4f7, #e0e8ed);
+            color: #333;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #d1d9e6;
+            box-shadow: 6px 6px 12px #b8c3d1, -6px -6px 12px #f0f8ff;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-out;
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+        
+        /* Dark mode for message box */
+        body.dark-mode .message-box {
+            background: linear-gradient(45deg, #3c546a, #2c3e50);
+            color: #ecf0f1;
+            box-shadow: 6px 6px 12px #22303e, -6px -6px 12px #46627e;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+            to { opacity: 1; transform: translateY(0) translateX(-50%); }
+        }
+        
+        /* Loading Skeleton */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-color: #dcdcdc; }
+            100% { background-color: #f2f2f2; }
+        }
+
+        body.dark-mode .skeleton {
+            background-color: #444;
+        }
+
+        .skeleton-card {
+            height: 200px;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        /* Confetti Effect */
+        #confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .confetti {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: confetti-fall 2s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100px) rotateZ(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+        }
+
+        /* Waste Classification Guide Section */
+        #classification-guide {
+            background: var(--color-background);
+            transition: background var(--transition-speed);
+        }
+
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--color-primary-green);
+            background: transparent;
+            color: var(--color-primary-green);
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+        }
+
+        .lang-btn.active {
+            background: var(--color-primary-green);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .classification-content h3 {
+            margin-top: 2rem;
+            color: var(--color-primary-green);
+        }
+
+        /* Advanced Guide Section */
+        .category-list, .mapping-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 2rem;
+        }
+
+        .category-item, .area-box, .other-areas-box {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .local-area-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Bin Guide Section */
+        #bin-guide {
+            background: var(--color-background);
+            transition: background var(--transition-speed);
+        }
+
+        .bin-guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .bin-box {
+            background: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .bin-box.blue { background-color: rgba(52, 152, 219, 0.2); }
+        .bin-box.yellow { background-color: rgba(241, 196, 15, 0.2); }
+        .bin-box.brown { background-color: rgba(125, 77, 41, 0.2); }
+        .bin-box.green { background-color: rgba(46, 204, 113, 0.2); }
+        .bin-box.gray { background-color: rgba(149, 165, 166, 0.2); }
+
+        .bin-box h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        
+        .bin-box .btn {
+            margin-top: 1rem;
+        }
+        
+        /* Category Item Colors */
+        .category-item.paper-card { background-color: rgba(52, 152, 219, 0.2); }
+        .category-item.plastics-packaging { background-color: rgba(241, 196, 15, 0.2); }
+        .category-item.glass { background-color: rgba(46, 204, 113, 0.2); }
+        .category-item.metals { background-color: rgba(189, 195, 199, 0.2); }
+        .category-item.bio-organic { background-color: rgba(125, 77, 41, 0.2); }
+        .category-item.residual { background-color: rgba(149, 165, 166, 0.2); }
+        .category-item.e-waste { background-color: rgba(52, 73, 94, 0.2); }
+        .category-item.hazardous { background-color: rgba(231, 76, 60, 0.2); }
+        
+        .category-item a {
+            color: var(--color-primary-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .circle-blue { background-color: #3498db; }
+        .circle-yellow { background-color: #f1c40f; }
+        .circle-brown { background-color: #7d4d29; }
+        .circle-green { background-color: #2ecc71; }
+        .circle-gray { background-color: #95a5a6; }
+        .circle-red { background-color: #e74c3c; }
+
+        .area-box h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .area-box textarea {
+            width: 100%;
+            height: 80px;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            color: var(--color-text);
+            resize: vertical;
+        }
+
+        /* Light/Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--color-card-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px var(--color-shadow-light);
+            transition: background var(--transition-speed);
+        }
+        
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+            transition: all var(--transition-speed);
+        }
+
+        body.dark-mode .theme-toggle svg {
+            color: #f1c40f;
+        }
+        
+        /* Footer Styling */
+        footer {
+            background: var(--color-background-light);
+            color: var(--color-text-light);
+            padding: 3rem 1rem;
+            text-align: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            transition: background var(--transition-speed), color var(--transition-speed);
+        }
+
+        body.dark-mode footer {
+            background: var(--color-background-dark);
+            color: var(--color-text-dark);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .footer-links a {
+            color: var(--color-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition-speed);
+        }
+
+        .footer-links a:hover {
+            color: var(--color-primary-green);
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .hero-content {
+                padding: 1rem;
+            }
+            .result-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div id="confetti-container"></div>
+    <div id="complainMessage" class="message-box"></div>
+    
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content">
+            <h1 class="gradient-text">RecycleBuddy Nashik</h1>
+            <p>Your guide to a cleaner, greener Nashik. Find out how to dispose of your waste responsibly.</p>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for a waste item...">
+                <div id="suggestions"></div>
+            </div>
+            <div class="cta-buttons">
+                <button class="btn" id="classifyButton">Classify Waste</button>
+                <button class="btn btn-secondary" onclick="showConfetti()">Share</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Waste Classification Cards -->
+    <section id="cards" class="container">
+        <h2 class="text-center is-visible">Waste Categories</h2>
+        <div class="card-grid">
+            <div class="card" data-animation="slide-up" data-category="recyclables">
+                <div class="icon">♻️</div>
+                <h3>Recyclables</h3>
+                <p>Plastics, paper, metal, and glass.</p>
+            </div>
+            <div class="card" data-animation="slide-up" data-category="organic">
+                <div class="icon">🍎</div>
+                <h3>Organic Waste</h3>
+                <p>Food scraps, yard trimmings, and compostables.</p>
+            </div>
+            <div class="card" data-animation="slide-up" data-category="e-waste">
+                <div class="icon">🔋</div>
+                <h3>E-Waste</h3>
+                <p>Electronics, batteries, and appliances.</p>
+            </div>
+            <div class="card" data-animation="slide-up" data-category="hazardous">
+                <div class="icon">🧪</div>
+                <h3>Hazardous Waste</h3>
+                <p>Chemicals, paints, and other toxic materials.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bin Classification Guide Section -->
+    <section id="bin-guide" class="container">
+        <h2 class="text-center">Bin Classification</h2>
+        <p class="text-center">As per Nashik Municipal Corporation guidelines, please use the following bins for waste disposal. This ensures proper sorting and enhances recycling efficiency.</p>
+        <div class="bin-guide-grid">
+            <div class="bin-box blue" data-animation="fade-in">
+                <h3>Blue Bin</h3>
+                <p>For **Paper & Card**.</p>
+                <button class="btn" onclick="getBin()">Get a Bin</button>
+            </div>
+            <div class="bin-box yellow" data-animation="fade-in">
+                <h3>Yellow Bin</h3>
+                <p>For **Plastics & Packaging**.</p>
+                <button class="btn" onclick="getBin()">Get a Bin</button>
+            </div>
+            <div class="bin-box brown" data-animation="fade-in">
+                <h3>Brown Bin</h3>
+                <p>For **Bio/Organic** waste.</p>
+                <button class="btn" onclick="getBin()">Get a Bin</button>
+            </div>
+            <div class="bin-box green" data-animation="fade-in">
+                <h3>Green Igloos</h3>
+                <p>For **Glass** (by color).</p>
+                <button class="btn" onclick="getBin()">Get a Bin</button>
+            </div>
+            <div class="bin-box gray" data-animation="fade-in">
+                <h3>Gray Bin</h3>
+                <p>For **Residual** waste.</p>
+                <button class="btn" onclick="getBin()">Get a Bin</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="container">
+        <!-- <h2 class="text-center">Your Impact</h2> -->
+        <div id="resultsList">
+            <!-- Dynamically added results will go here -->
+        </div>
+
+        <!-- Waste Management Impact Section -->
+        <div id="impact-of-waste-management" class="section-content">
+            <h2 class="text-center">Impact of Waste Management</h2>
+            <div class="language-toggle">
+                <button class="lang-btn active" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="hi">Hindi</button>
+                <button class="lang-btn" data-lang="mr">Marathi</button>
+            </div>
+            <div class="impact-content" id="impactContent">
+                <!-- Content will be dynamically added here based on language -->
+            </div>
+        </div>
+
+        <!-- Benefits of Color-Coded Bins Section -->
+        <div id="bin-benefits" class="section-content">
+            <h2 class="text-center">Benefits of Color-Coded Bins</h2>
+            <div class="language-toggle">
+                <button class="lang-btn active" data-lang="en">English</button>
+                <button class="lang-btn" data-lang="hi">Hindi</button>
+                <button class="lang-btn" data-lang="mr">Marathi</button>
+            </div>
+            <div class="bin-benefits-content" id="binBenefitsContent">
+                <!-- Content will be dynamically added here based on language -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Waste Classification Guide Section -->
+    <section id="classification-guide" class="container">
+        <h2 class="text-center">Waste Classification Guide</h2>
+        <div class="language-toggle">
+            <button class="lang-btn active" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="hi">Hindi</button>
+            <button class="lang-btn" data-lang="mr">Marathi</button>
+        </div>
+        <div class="classification-content" id="classificationContent">
+            <!-- Content will be dynamically added here based on language -->
+        </div>
+    </section>
+
+    <!-- New Advanced Guide Section -->
+    <section id="advanced-guide" class="container">
+        <h2 class="text-center">Detailed Guide & Local Mapping</h2>
+        <div class="language-toggle">
+            <button class="lang-btn active" data-lang="en">English</button>
+            <button class="lang-btn" data-lang="hi">Hindi</button>
+            <button class="lang-btn" data-lang="mr">Marathi</button>
+        </div>
+        <div class="advanced-content" id="advancedContent">
+            <!-- Content will be dynamically added here -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2025 RecycleBuddy Nashik. Designed by Manish Bhavar.</p>
+            <div class="footer-links">
+                <a href="#hero">Home</a>
+                <a href="#classification-guide">About Us</a>
+                <a href="#" onclick="showContactInfo(event)">Contact</a>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Dark/Light Mode Toggle -->
+    <button class="theme-toggle" id="theme-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1m-16 0H3m15.364 6.364l-.707.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    </button>
+
+    <script>
+        // Set up Firebase global variables
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Dark/Light Mode Toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    // Store preference in localStorage
+                    if (document.body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
+
+                // Load theme preference from localStorage
+                if (localStorage.getItem('theme') === 'dark') {
+                    document.body.classList.add('dark-mode');
+                }
+            }
+
+
+            // Intersection Observer for scroll-triggered animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('[data-animation]').forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Particles effect for the hero section
+            const heroSection = document.getElementById('hero');
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 5 + 5; // Size between 5px and 10px
+                const x = Math.random() * heroSection.offsetWidth;
+                const y = Math.random() * heroSection.offsetHeight;
+                const duration = Math.random() * 10 + 5; // Duration between 5s and 15s
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = Math.random() * 0.5 + 0.5;
+
+                heroSection.appendChild(particle);
+
+                // Remove particle after animation to prevent performance issues
+                setTimeout(() => {
+                    particle.remove();
+                }, duration * 1000);
+            }
+
+            setInterval(createParticle, 300); // Create a new particle every 300ms
+
+            // Custom Confetti effect
+            window.showConfetti = function() {
+                const confettiContainer = document.getElementById('confetti-container');
+                if (!confettiContainer) return;
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti');
+                    confetti.style.width = `${Math.random() * 10 + 5}px`;
+                    confetti.style.height = `${Math.random() * 10 + 5}px`;
+                    confetti.style.left = `${Math.random() * 100}vw`;
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+                    confetti.style.animationDuration = `${Math.random() * 1.5 + 1}s`;
+                    confettiContainer.appendChild(confetti);
+                }
+            }
+            
+            // Custom cursor effect
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            
+            if (cursorDot && cursorOutline) {
+                document.addEventListener('mousemove', (e) => {
+                    cursorDot.style.left = e.clientX + 'px';
+                    cursorDot.style.top = e.clientY + 'px';
+                    cursorOutline.style.left = e.clientX + 'px';
+                    cursorOutline.style.top = e.clientY + 'px';
+                });
+                
+                document.querySelectorAll('a, button, input, .card').forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursorOutline.style.width = '50px';
+                        cursorOutline.style.height = '50px';
+                        cursorOutline.style.borderColor = 'transparent';
+                        cursorOutline.style.background = 'rgba(255, 255, 255, 0.4)';
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        cursorOutline.style.width = '30px';
+                        cursorOutline.style.height = '30px';
+                        cursorOutline.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-green');
+                        cursorOutline.style.background = 'transparent';
+                    });
+                });
+            }
+
+            // Functional Search Box with Suggestions
+            const searchInput = document.getElementById('searchInput');
+            const suggestionsContainer = document.getElementById('suggestions');
+            const allSuggestions = [
+                // Waste Items
+                'Plastic Bottle', 'Glass Bottle', 'Paper', 'Cardboard', 'Aluminum Can',
+                'Food Scraps', 'Banana Peel', 'Apple Core', 'Yard Trimmings',
+                'Old Mobile Phone', 'Laptop', 'Batteries', 'TV', 'Light Bulbs',
+                'Paint', 'Pesticides', 'Cleaning Products', 'Motor Oil',
+
+                // Detailed Categories
+                'Paper & Card', 'Plastics & Packaging', 'Glass', 'Metals', 'Bio/Organic', 'Residual',
+                
+                // Local Areas
+                'Panchvati', 'Cidco', 'Mhasrul', 'Adgaon', 'Nashik Road', 'Shivaji Nagar', 'Tarwala Nagar'
+            ];
+            
+            if (searchInput && suggestionsContainer) {
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.toLowerCase();
+                    suggestionsContainer.innerHTML = '';
+                    if (query.length === 0) {
+                        suggestionsContainer.style.display = 'none';
+                        return;
+                    }
+
+                    const filteredItems = allSuggestions.filter(item =>
+                        item.toLowerCase().includes(query)
+                    );
+
+                    if (filteredItems.length > 0) {
+                        filteredItems.forEach(item => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('suggestion-item');
+                            suggestionItem.textContent = item;
+                            
+                            // Check if the suggestion is a category to enable scrolling
+                            if (['Paper & Card', 'Plastics & Packaging', 'Glass', 'Metals', 'Bio/Organic', 'Residual', 'Panchvati', 'Cidco', 'Mhasrul', 'Adgaon', 'Nashik Road', 'Shivaji Nagar', 'Tarwala Nagar'].includes(item)) {
+                                suggestionItem.setAttribute('data-scroll-to', item.toLowerCase().replace(/ & /g, '').replace(/ /g, '-'));
+                            }
+                            
+                            suggestionItem.addEventListener('click', () => {
+                                const scrollToId = suggestionItem.getAttribute('data-scroll-to');
+                                if (scrollToId) {
+                                    const targetElement = document.getElementById(scrollToId);
+                                    if (targetElement) {
+                                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }
+                                } else {
+                                    searchInput.value = item;
+                                    suggestionsContainer.style.display = 'none';
+                                }
+                            });
+                            suggestionsContainer.appendChild(suggestionItem);
+                        });
+                        suggestionsContainer.style.display = 'block';
+                    } else {
+                        suggestionsContainer.style.display = 'none';
+                    }
+                });
+
+                searchInput.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        suggestionsContainer.style.display = 'none';
+                    }, 150);
+                });
+            }
+
+            // Classify Waste Button Functionality
+            const classifyButton = document.getElementById('classifyButton');
+            const resultsList = document.getElementById('resultsList');
+            const resultsSection = document.getElementById('results');
+            const classificationGuideSection = document.getElementById('classification-guide');
+
+
+            if (classifyButton) {
+                classifyButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query.length === 0) {
+                        // Scroll to the new classification guide section
+                        classificationGuideSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        return;
+                    }
+
+                    // Remove any existing message boxes before adding a new result
+                    const existingMessageBox = resultsList.querySelector('.message-box');
+                    if(existingMessageBox) {
+                        existingMessageBox.remove();
+                    }
+
+                    let category = 'general';
+                    let description = 'This is a general waste item. Please check local guidelines for proper disposal.';
+                    let impact = 20;
+
+                    const lowerQuery = query.toLowerCase();
+
+                    if (['plastic bottle', 'glass bottle', 'paper', 'cardboard', 'aluminum can'].some(item => lowerQuery.includes(item))) {
+                        category = 'recyclables';
+                        description = 'This is a **recyclable** item. Dispose of it in a designated recycling bin. It will be processed into new materials.';
+                        impact = 80;
+                    } else if (['food scraps', 'banana peel', 'apple core', 'yard trimmings'].some(item => lowerQuery.includes(item))) {
+                        category = 'organic';
+                        description = 'This item is **organic waste**. It can be composted to create nutrient-rich soil.';
+                        impact = 95;
+                    } else if (['old mobile phone', 'laptop', 'batteries', 'tv', 'light bulbs'].some(item => lowerQuery.includes(item))) {
+                        category = 'e-waste';
+                        description = 'This is **e-waste**. It contains valuable materials that can be recovered. Take it to a specialized e-waste collection center.';
+                        impact = 75;
+                    } else if (['paint', 'pesticides', 'cleaning products', 'motor oil'].some(item => lowerQuery.includes(item))) {
+                        category = 'hazardous';
+                        description = 'This item is **hazardous waste**. It should be handled with extreme care and disposed of at a proper hazardous waste facility.';
+                        impact = 50;
+                    }
+                    
+                    // Get the emoji or icon for the bin illustration based on category
+                    let binSrc;
+                    switch (category) {
+                        case 'recyclables':
+                            binSrc = 'https://placehold.co/150x200/2ecc71/ffffff?text=Recycling+Bin';
+                            break;
+                        case 'organic':
+                            binSrc = 'https://placehold.co/150x200/f1c40f/ffffff?text=Compost+Bin';
+                            break;
+                        case 'e-waste':
+                            binSrc = 'https://placehold.co/150x200/34495e/ffffff?text=E-Waste+Bin';
+                            break;
+                        case 'hazardous':
+                            binSrc = 'https://placehold.co/150x200/e74c3c/ffffff?text=Hazardous+Bin';
+                            break;
+                        default:
+                            binSrc = 'https://placehold.co/150x200/95a5a6/ffffff?text=General+Waste+Bin';
+                    }
+
+                    // Create the new result item element
+                    const newResult = document.createElement('div');
+                    newResult.classList.add('result-item');
+                    newResult.setAttribute('data-animation', 'slide-left');
+                    newResult.innerHTML = `
+                        <img src="${binSrc}" alt="${query} bin" class="bin-illustration">
+                        <div>
+                            <h3>${query}</h3>
+                            <p>${description}</p>
+                            <h4>Environmental Impact</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${impact}%;"></div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Prepend the new result item to the list
+                    resultsList.prepend(newResult);
+
+                    // Clear the search input
+                    searchInput.value = '';
+                    
+                    // Animate the new result item and scroll to it
+                    setTimeout(() => {
+                        newResult.classList.add('is-visible');
+                        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+
+                });
+            }
+            
+            // Get a Bin button functionality
+            window.getBin = function() {
+                const complainMessageDiv = document.getElementById('complainMessage');
+                if (complainMessageDiv) {
+                    complainMessageDiv.textContent = 'Bin will be delivered on your registered address in 7 Working Days.';
+                    complainMessageDiv.style.display = 'block';
+                    showConfetti();
+                    setTimeout(() => {
+                        complainMessageDiv.style.display = 'none';
+                    }, 3000);
+                }
+            };
+            
+            // New function to handle the contact link
+            window.showContactInfo = function(event) {
+                event.preventDefault();
+                const complainMessageDiv = document.getElementById('complainMessage');
+                if (complainMessageDiv) {
+                    complainMessageDiv.textContent = 'Contact Manish Bhavar: mbhavar2121@gmail.com | +91 8459059460';
+                    complainMessageDiv.style.display = 'block';
+                    setTimeout(() => {
+                        complainMessageDiv.style.display = 'none';
+                    }, 5000);
+                }
+            };
+
+            // Language Data
+            const contentData = {
+                en: {
+                    title: 'Waste Classification Guide',
+                    recyclables: {
+                        heading: 'Recyclables (Dry Waste)',
+                        content: 'Recyclable waste includes plastic, paper, cardboard, metal, and glass. These materials can be reprocessed into new products, reducing the need for raw materials and saving energy. To ensure you’re doing it right, please follow the guidelines and separate the waste according to its type. For example, plastic bottles should be clean and have their caps removed.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=Fj-875M0Jj0'
+                    },
+                    organic: {
+                        heading: 'Organic Waste (Wet Waste)',
+                        content: 'Organic waste is biodegradable material like food scraps, fruit peels, vegetable waste, and garden trimmings. This can be composted to create nutrient-rich soil. Remember to keep a separate bin for this waste and avoid throwing non-biodegradable items in it.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=kR2r-e0n-0M'
+                    },
+                    eWaste: {
+                        heading: 'E-Waste (Electronic Waste)',
+                        content: 'E-waste includes discarded electronic devices such as mobile phones, laptops, batteries, and appliances. These items contain hazardous materials that must be disposed of properly at designated collection centers. Never throw them in regular garbage as they can harm the environment and human health.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g'
+                    },
+                    hazardous: {
+                        heading: 'Hazardous Waste',
+                        content: 'Hazardous waste is any waste that poses a threat to human health or the environment. This includes chemicals, paints, pesticides, and expired medicines. Never mix them with regular garbage. You must dispose of them at a specific hazardous waste facility in your area.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU'
+                    },
+                    impact: {
+                        environmental: {
+                            heading: 'Environmental Impact',
+                            content: 'Proper waste management significantly reduces pollution. By recycling and composting, we divert waste from landfills, preventing soil and water contamination. It also reduces greenhouse gas emissions from decomposing organic matter.'
+                        },
+                        social: {
+                            heading: 'Social Impact',
+                            content: 'Effective waste management creates a cleaner and healthier city for everyone. It reduces the risk of disease, improves public aesthetics, and promotes a sense of civic responsibility and community pride.'
+                        },
+                        economic: {
+                            heading: 'Economic Impact',
+                            content: 'Recycling creates new jobs in the collection, processing, and manufacturing sectors. It also generates revenue from the sale of recycled materials and reduces the costs associated with landfill management.'
+                        },
+                    },
+                    binBenefits: {
+                        heading: 'Benefits of Using Color-Coded Bins',
+                        intro: 'Using the right colored bin for your waste is a simple step that makes a huge difference. By sorting at the source, we can dramatically improve our city\'s waste management efficiency.',
+                        benefits: [
+                            { heading: 'Reduces Contamination', content: 'When waste is sorted correctly, it prevents non-recyclable materials from contaminating clean recycling batches. This ensures that more of our waste can actually be recycled and repurposed.' },
+                            { heading: 'Improves Public Health', content: 'Organized waste collection prevents garbage from spilling onto streets and public areas. This reduces the spread of disease, keeps our city cleaner, and promotes a healthier living environment.' },
+                            { heading: 'Economic Benefits', content: 'Properly sorted materials are more valuable to recycling industries. This efficiency lowers operational costs for the city, creates more jobs in the waste management sector, and supports a circular economy.' }
+                        ]
+                    },
+                    advanced: {
+                        categories: {
+                            heading: 'Detailed Waste Categories',
+                            items: [
+                                { name: 'Paper & Card', desc: 'Office paper, newspaper, cardboard (clean/greasy), tetra pak. To recycle, ensure these items are dry and clean. Flatten cardboard boxes to save space.', youtubeLink: 'https://www.youtube.com/watch?v=R96c_L8rYnQ', class: 'paper-card', color: '#3498db' },
+                                { name: 'Plastics & Packaging', desc: 'PET bottles, HDPE bottles, film plastic, yogurt cup, blister pack, styrofoam. Rinse out containers before recycling. Styrofoam is not widely recycled, so check local guidelines.', youtubeLink: 'https://www.youtube.com/watch?v=l_a6aG-eE8k', class: 'plastics-packaging', color: '#f1c40f' },
+                                { name: 'Glass', desc: 'Clear, brown, and green bottles & jars. Glass is infinitely recyclable. Remove lids and rinse bottles before dropping them off at a designated collection point.', youtubeLink: 'https://www.youtube.com/watch?v=P67yE9z2cKk', class: 'glass', color: '#2ecc71' },
+                                { name: 'Metals', desc: 'Aluminum can, steel can, clean foil, dirty foil. Rinse cans and flatten them to save space. Note that dirty foil is often non-recyclable.', youtubeLink: 'https://www.youtube.com/watch?v=SjB-B1y66lI', class: 'metals', color: '#bdc3c7' },
+                                { name: 'Bio/Organic', desc: 'Food scraps, coffee grounds, tea bag, garden waste. These items can be composted at home or taken to a municipal composting facility.', youtubeLink: 'https://www.youtube.com/watch?v=hG6T3U4v14c', class: 'bio-organic', color: '#7d4d29' },
+                                { name: 'Residual', desc: 'Non-recyclable materials, sanitary waste. This includes items that cannot be recycled or composted and must be sent to the landfill. Proper disposal is key to preventing pollution.', youtubeLink: 'https://www.youtube.com/watch?v=q6K-XhG18qg', class: 'residual', color: '#95a5a6' },
+                                { name: 'E-Waste', desc: 'E-waste includes discarded electronic devices such as mobile phones, laptops, batteries, and appliances. These items contain hazardous materials that must be disposed of properly at designated collection centers.', youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g', class: 'e-waste', color: '#34495e' },
+                                { name: 'Hazardous', desc: 'Hazardous waste is any waste that poses a threat to human health or the environment. This includes chemicals, paints, pesticides, and expired medicines. Never mix them with regular garbage.', youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU', class: 'hazardous', color: '#e74c3c' }
+                            ]
+                        },
+                        mapping: {
+                            heading: 'Local Mapping in Nashik',
+                            areas: [
+                                'Panchvati', 'Cidco', 'Mhasrul', 'Adgaon', 'Nashik Road', 'Shivaji Nagar', 'Tarwala Nagar'
+                            ],
+                            otherAreas: 'We will expand our boundaries by adding more areas with the help of this box.'
+                        }
+                    }
+                },
+                hi: {
+                    title: 'कचरा वर्गीकरण गाइड',
+                    recyclables: {
+                        heading: 'पुनर्चक्रण योग्य (सूखा कचरा)',
+                        content: 'पुनर्चक्रण योग्य कचरे में प्लास्टिक, कागज, कार्डबोर्ड, धातु और कांच शामिल हैं। इन सामग्रियों को नए उत्पादों में पुन: संसाधित किया जा सकता है, जिससे कच्चे माल की आवश्यकता कम होती है और ऊर्जा की बचत होती है। सही ढंग से करने के लिए, कृपया दिशानिर्देशों का पालन करें और कचरे को उसके प्रकार के अनुसार अलग करें। उदाहरण के लिए, प्लास्टिक की बोतलें साफ होनी चाहिए और उनके ढक्कन हटा दिए जाने चाहिए।',
+                        youtubeLink: 'https://www.youtube.com/watch?v=Fj-875M0Jj0'
+                    },
+                    organic: {
+                        heading: 'जैविक कचरा (गीला कचरा)',
+                        content: 'जैविक कचरा खाद्य स्क्रैप, फलों के छिलके, सब्जी के कचरे और बगीचे की छंटनी जैसी बायोडिग्रेडेबल सामग्री है। इसे पोषक तत्वों से भरपूर मिट्टी बनाने के लिए खाद बनाया जा सकता है। इस कचरे के लिए एक अलग डिब्बा रखें और उसमें गैर-बायोडिग्रेडेबल चीजें न डालें।',
+                        youtubeLink: 'https://www.youtube.com/watch?v=kR2r-e0n-0M'
+                    },
+                    eWaste: {
+                        heading: 'ई-कचरा (इलेक्ट्रॉनिक कचरा)',
+                        content: 'ई-कचरे में मोबाइल फोन, लैपटॉप, बैटरी और उपकरण जैसे छोड़े गए इलेक्ट्रॉनिक उपकरण शामिल हैं। इन वस्तुओं में खतरनाक सामग्री होती है, जिनका उचित निपटान निर्दिष्ट संग्रह केंद्रों पर किया जाना चाहिए। इन्हें कभी भी सामान्य कचरे में न डालें क्योंकि वे पर्यावरण और मानव स्वास्थ्य को नुकसान पहुंचा सकते हैं।',
+                        youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g'
+                    },
+                    hazardous: {
+                        heading: 'खतरनाक कचरा (खतरनाक कचरा)',
+                        content: 'खतरनाक कचरा कोई भी ऐसा कचरा है जो मानव स्वास्थ्य या पर्यावरण के लिए खतरा पैदा करता है। इसमें रसायन, पेंट, कीटनाशक और समाप्त हो चुकी दवाएं शामिल हैं। इन्हें कभी भी सामान्य कचरे में न मिलाएं। आपको इनका निपटान अपने क्षेत्र में एक विशिष्ट खतरनाक अपशिष्ट सुविधा में करना होगा।',
+                        youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU'
+                    },
+                    impact: {
+                        environmental: {
+                            heading: 'पर्यावरणीय प्रभाव',
+                            content: 'उचित अपशिष्ट प्रबंधन प्रदूषण को काफी कम करता है। पुनर्चक्रण और खाद बनाने से, हम कचरे को लैंडफिल से हटाते हैं, जिससे मिट्टी और पानी का दूषित होना रुकता है। यह विघटित होने वाले कार्बनिक पदार्थों से ग्रीनहाउस गैस उत्सर्जन को भी कम करता है।'
+                        },
+                        social: {
+                            heading: 'सामाजिक प्रभाव',
+                            content: 'प्रभावी अपशिष्ट प्रबंधन सभी के लिए एक स्वच्छ और स्वस्थ शहर बनाता है। यह बीमारियों के जोखिम को कम करता है, सार्वजनिक सौंदर्य में सुधार करता है, और नागरिक जिम्मेदारी और सामुदायिक गौरव की भावना को बढ़ावा देता है।'
+                        },
+                        economic: {
+                            heading: 'आर्थिक प्रभाव',
+                            content: 'पुनर्चक्रण संग्रह, प्रसंस्करण और विनिर्माण क्षेत्रों में नए रोजगार पैदा करता है। यह पुनर्नवीनीकरण सामग्री की बिक्री से भी राजस्व उत्पन्न करता है और लैंडफिल प्रबंधन से जुड़े खर्चों को कम करता है।'
+                        },
+                    },
+                    binBenefits: {
+                        heading: 'रंग-कोडित डिब्बों का उपयोग करने के लाभ',
+                        intro: 'अपने कचरे के लिए सही रंग का डिब्बा चुनना एक सरल कदम है जिससे बहुत बड़ा फर्क पड़ता है। स्रोत पर ही कचरा छांटकर, हम अपने शहर की कचरा प्रबंधन दक्षता को नाटकीय रूप से बेहतर बना सकते हैं।',
+                        benefits: [
+                            { heading: 'संदूषण को कम करता है', content: 'जब कचरे को सही ढंग से छांटा जाता है, तो यह गैर-पुनर्चक्रण योग्य सामग्री को स्वच्छ पुनर्चक्रण बैचों को दूषित करने से रोकता है। यह सुनिश्चित करता है कि हमारे कचरे का अधिक हिस्सा वास्तव में पुनर्नवीनीकरण और पुन: उपयोग किया जा सके।' },
+                            { heading: 'सार्वजनिक स्वास्थ्य में सुधार करता है', content: 'संगठित कचरा संग्रह सड़कों और सार्वजनिक क्षेत्रों में कचरे को फैलने से रोकता है। यह बीमारियों के प्रसार को कम करता है, हमारे शहर को साफ रखता है, और एक स्वस्थ रहने वाले वातावरण को बढ़ावा देता।' },
+                            { heading: 'आर्थिक लाभ', content: 'सही ढंग से छांटे गए पदार्थ पुनर्चक्रण उद्योगों के लिए अधिक मूल्यवान होते हैं। यह दक्षता शहर के लिए परिचालन लागत को कम करती है, कचरा प्रबंधन क्षेत्र में अधिक रोजगार पैदा करती है, और एक चक्रीय अर्थव्यवस्था का समर्थन करती है।' }
+                        ]
+                    },
+                    advanced: {
+                        categories: {
+                            heading: 'विस्तृत कचरा श्रेणियाँ',
+                            items: [
+                                { name: 'कागज और गत्ता', desc: 'ऑफिस पेपर, अखबार, कार्डबोर्ड (साफ/चिकना), टेट्रा पैक। पुनर्चक्रण के लिए, सुनिश्चित करें कि ये वस्तुएं सूखी और साफ हों। जगह बचाने के लिए कार्डबोर्ड बॉक्स को समतल करें।', youtubeLink: 'https://www.youtube.com/watch?v=R96c_L8rYnQ', class: 'paper-card', color: '#3498db' },
+                                { name: 'प्लास्टिक और पैकेजिंग', desc: 'पीईटी बोतलें, एचडीपीई बोतलें, फिल्म प्लास्टिक, दही का कप, ब्लिस्टर पैक, स्टायरोफोम। पुनर्चक्रण से पहले कंटेनरों को धो लें। स्टायरोफोम का व्यापक रूप से पुनर्चक्रण नहीं होता है, इसलिए स्थानीय दिशानिर्देशों की जांच करें।', youtubeLink: 'https://www.youtube.com/watch?v=l_a6aG-eE8k', class: 'plastics-packaging', color: '#f1c40f' },
+                                { name: 'कांच', desc: 'साफ, भूरी और हरी बोतलें और जार। कांच का असीमित रूप से पुनर्चक्रण किया जा सकता है। ढक्कन हटा दें और निर्दिष्ट संग्रह बिंदु पर डालने से पहले बोतलों को धो लें।', youtubeLink: 'https://www.youtube.com/watch?v=P67yE9z2cKk', class: 'glass', color: '#2ecc71' },
+                                { name: 'धातुएं', desc: 'एल्यूमीनियम कैन, स्टील कैन, साफ फॉइल, गंदी फॉइल। जगह बचाने के लिए डिब्बे धोएं और उन्हें समतल करें। ध्यान दें कि गंदी फॉइल अक्सर गैर-पुनर्चक्रण योग्य होती है।', youtubeLink: 'https://www.youtube.com/watch?v=SjB-B1y66lI', class: 'metals', color: '#bdc3c7' },
+                                { name: 'जैव/कार्बनिक', desc: 'खाद्य स्क्रैप, कॉफी ग्राउंड्स, चाय बैग, बगीचे का कचरा। इन वस्तुओं को घर पर खाद बनाया जा सकता है या नगरपालिका खाद सुविधा में ले जाया जा सकता है।', youtubeLink: 'https://www.youtube.com/watch?v=hG6T3U4v14c', class: 'bio-organic', color: '#7d4d29' },
+                                { name: 'अवशिष्ट', desc: 'गैर-पुनर्चक्रण योग्य, सैनिटरी कचरा। इसमें ऐसी वस्तुएं शामिल हैं जिन्हें पुनर्चक्रित या खाद नहीं बनाया जा सकता है और उन्हें लैंडफिल में भेजा जाना चाहिए। प्रदूषण को रोकने के लिए उचित निपटान महत्वपूर्ण है।', youtubeLink: 'https://www.youtube.com/watch?v=q6K-XhG18qg', class: 'residual', color: '#95a5a6' },
+                                { name: 'ई-कचरा', desc: 'ई-कचरे में मोबाइल फोन, लैपटॉप, बैटरी और उपकरण जैसे छोड़े गए इलेक्ट्रॉनिक उपकरण शामिल हैं। इन वस्तुओं में खतरनाक सामग्री होती है, जिनका उचित निपटान निर्दिष्ट संग्रह केंद्रों पर किया जाना चाहिए। इन्हें कभी भी सामान्य कचरे में न डालें क्योंकि वे पर्यावरण और मानव स्वास्थ्य को नुकसान पहुंचा सकते हैं।', youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g', class: 'e-waste', color: '#34495e' },
+                                { name: 'खतरनाक कचरा', desc: 'खतरनाक कचरा कोई भी ऐसा कचरा है जो मानव स्वास्थ्य या पर्यावरण के लिए खतरा पैदा करता है। इसमें रसायन, पेंट, कीटनाशक और समाप्त हो चुकी दवाएं शामिल हैं। इन्हें कभी भी सामान्य कचरे में न मिलाएं। आपको इनका निपटान अपने क्षेत्र में एक विशिष्ट खतरनाक अपशिष्ट सुविधा में करना होगा।', youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU', class: 'hazardous', color: '#e74c3c' }
+                            ]
+                        },
+                        mapping: {
+                            heading: 'नाशिक में स्थानीय मानचित्रण',
+                            areas: [
+                                'Panchvati', 'Cidco', 'Mhasrul', 'Adgaon', 'Nashik Road', 'Shivaji Nagar', 'Tarwala Nagar'
+                            ],
+                            otherAreas: 'हम इस बॉक्स की मदद से और अधिक क्षेत्रों को जोड़कर अपनी सीमाओं का विस्तार करेंगे।'
+                        }
+                    }
+                },
+                mr: {
+                    title: 'कचरा वर्गीकरण मार्गदर्शक',
+                    recyclables: {
+                        heading: 'पुनर्वापरण्यायोग्य (सुका कचरा)',
+                        content: 'पुनर्वापरण्यायोग्य कचऱ्यामध्ये प्लास्टिक, कागद, पुठ्ठा, धातू आणि काच यांचा समावेश होतो. या साहित्यावर प्रक्रिया करून नवीन उत्पादने तयार करता येतात, ज्यामुळे कच्च्या मालाची गरज कमी होते आणि ऊर्जेची बचत होते. हे योग्य रीतीने करण्यासाठी, कृपया मार्गदर्शक तत्त्वांचे पालन करा आणि कचऱ्याचे प्रकारानुसार वर्गीकरण करा. उदाहरणार्थ, प्लास्टिकच्या बाटल्या स्वच्छ असाव्यात आणि त्यांची झाकणे काढलेली असावीत.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=Fj-875M0Jj0'
+                    },
+                    organic: {
+                        heading: 'सेंद्रिय कचरा (ओला कचरा)',
+                        content: 'सेंद्रिय कचरा हा अन्न, फळांच्या साली, भाजीपाला आणि बागेतील कचरा यांसारख्या विघटनशील पदार्थांचा असतो. यापासून खत तयार करून पोषक माती मिळवता येते. या कचऱ्यासाठी एक वेगळा डबा ठेवा आणि त्यात न विघटनशील वस्तू टाकू नका.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=kR2r-e0n-0M'
+                    },
+                    eWaste: {
+                        heading: 'ई-कचरा (इलेक्ट्रॉनिक कचरा)',
+                        content: 'ई-कचऱ्यामध्ये मोबाईल फोन, लॅपटॉप, बॅटरी आणि उपकरणे यांसारख्या टाकाऊ इलेक्ट्रॉनिक वस्तूंचा समावेश होतो. या वस्तूंमध्ये धोकादायक घटक असतात, ज्यांची योग्य विल्हेवाट विशिष्ट संग्रह केंद्रांवर लावली पाहिजे. त्यांना सामान्य कचऱ्यात कधीही टाकू नका कारण ते पर्यावरण आणि मानवी आरोग्याला हानी पोहोचवू शकतात.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g'
+                    },
+                    hazardous: {
+                        heading: 'धोकादायक कचरा (धोकादायक कचरा)',
+                        content: 'धोकादायक कचरा हा असा कचरा आहे जो मानवी आरोग्यासाठी किंवा पर्यावरणासाठी धोकादायक असतो. यात रसायने, रंग, कीटकनाशके आणि मुदतबाहेर गेलेली औषधे यांचा समावेश होतो. त्यांना सामान्य कचऱ्यात कधीही मिसळू नका. तुम्ही त्यांची योग्य विल्हेवाट तुमच्या परिसरातील धोकादायक कचरा सुविधा केंद्रात लावावी.',
+                        youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU'
+                    },
+                    impact: {
+                        environmental: {
+                            heading: 'पर्यावरणावरील परिणाम',
+                            content: 'योग्य कचरा व्यवस्थापनामुळे प्रदूषण लक्षणीयरीत्या कमी होते. पुनर्वापर आणि कंपोस्टिंग करून, आपण कचऱ्याला कचराभूमीपासून दूर ठेवतो, ज्यामुळे माती आणि पाण्याचे प्रदूषण टाळता येते. तसेच, यामुळे विघटन होणाऱ्या सेंद्रिय पदार्थांमुळे निर्माण होणाऱ्या हरितगृह वायूंचे उत्सर्जन कमी होते.'
+                        },
+                        social: {
+                            heading: 'सामाजिक परिणाम',
+                            content: 'प्रभावी कचरा व्यवस्थापन प्रत्येकासाठी स्वच्छ आणि निरोगी शहर तयार करते. यामुळे रोगांचा धोका कमी होतो, सार्वजनिक सौंदर्य सुधारते, आणि नागरिक जबाबदारी व सामुदायिक अभिमानाची भावना वाढते.'
+                        },
+                        economic: {
+                            heading: 'आर्थिक परिणाम',
+                            content: 'पुनर्वापर केल्याने संकलन, प्रक्रिया आणि उत्पादन क्षेत्रांमध्ये नवीन रोजगार निर्माण होतात. याव्यतिरिक्त, यामुळे पुनर्वापर केलेल्या साहित्याच्या विक्रीतून महसूल मिळतो आणि कचराभूमी व्यवस्थापनाशी संबंधित खर्च कमी होतो.'
+                        },
+                    },
+                    binBenefits: {
+                        heading: 'रंग-कोडित डबे वापरण्याचे फायदे',
+                        intro: 'तुमच्या कचऱ्यासाठी योग्य रंगाचा डबा वापरणे एक सोपे पाऊल आहे ज्यामुळे मोठा फरक पडतो. कचऱ्याला त्याच्या स्त्रोतावरच वेगळे करून, आपण आपल्या शहराच्या कचरा व्यवस्थापन क्षमतेत लक्षणीय सुधारणा करू शकतो.',
+                        benefits: [
+                            { heading: 'दूषितीकरण कमी करते', content: 'जेव्हा कचरा योग्यरित्या वर्गीकृत केला जातो, तेव्हा तो न पुनर्वापरण्यायोग्य साहित्याला स्वच्छ पुनर्वापर बॅचमध्ये मिसळण्यापासून प्रतिबंधित करतो. यामुळे आपल्या कचऱ्याचा अधिक भाग प्रत्यक्षात पुनर्वापर आणि पुन्हा वापरला जाऊ शकतो याची खात्री मिळते.' },
+                            { heading: 'सार्वजनिक आरोग्य सुधारते', content: 'व्यवस्थित कचरा संकलन रस्त्यांवर आणि सार्वजनिक ठिकाणी कचरा पसरण्यापासून प्रतिबंधित करते. यामुळे रोगांचा प्रसार कमी होतो, आपले शहर स्वच्छ राहते आणि एक निरोगी राहण्याच्या वातावरणाला प्रोत्साहन मिळते.' },
+                            { heading: 'आर्थिक फायदे', content: 'योग्य प्रकारे वर्गीकृत केलेले साहित्य पुनर्वापर उद्योगांसाठी अधिक मौल्यवान असते. ही कार्यक्षमता शहरासाठी कामकाजाचा खर्च कमी करते, कचरा व्यवस्थापन क्षेत्रात अधिक रोजगार निर्माण करते आणि चक्रीय अर्थव्यवस्थेला समर्थन देते.' }
+                        ]
+                    },
+                    advanced: {
+                        categories: {
+                            heading: 'विस्तृत कचरा श्रेण्या',
+                            items: [
+                                { name: 'कागद आणि पुठ्ठा', desc: 'ऑफिस पेपर, वर्तमानपत्र, पुठ्ठा (स्वच्छ/चिपचिपा), टेट्रा पॅक. पुनर्वापरासाठी, हे साहित्य कोरडे आणि स्वच्छ असल्याची खात्री करा. जागा वाचवण्यासाठी पुठ्ठ्याचे खोके सपाट करा.', youtubeLink: 'https://www.youtube.com/watch?v=R96c_L8rYnQ', class: 'paper-card', color: '#3498db' },
+                                { name: 'प्लास्टिक आणि पॅकेजिंग', desc: 'पीईटी बाटल्या, एचडीपीई बाटल्या, फिल्म प्लास्टिक, दही कप, ब्लिस्टर पॅक, स्टायरोफोम. पुनर्वापरापूर्वी कंटेनर धुवा. स्टायरोफोमचा मोठ्या प्रमाणावर पुनर्वापर होत नाही, त्यामुळे स्थानिक मार्गदर्शक तत्त्वांची तपासणी करा.', youtubeLink: 'https://www.youtube.com/watch?v=l_a6aG-eE8k', class: 'plastics-packaging', color: '#f1c40f' },
+                                { name: 'काच', desc: 'स्वच्छ, तपकिरी आणि हिरव्या बाटल्या आणि बरण्या. काच अमर्यादितपणे पुनर्वापरण्यायोग्य आहे. झाकण काढून टाका आणि बाटल्यांना योग्य संग्रह बिंदूवर टाकण्यापूर्वी धुवा.', youtubeLink: 'https://www.youtube.com/watch?v=P67yE9z2cKk', class: 'glass', color: '#2ecc71' },
+                                { name: 'धातू', desc: 'ॲल्युमिनियम कॅन, स्टील कॅन, स्वच्छ फॉइल, घाणेरडी फॉइल. जागा वाचवण्यासाठी कॅन धुवा आणि त्यांना सपाट करा. लक्षात ठेवा की घाणेरडी फॉइल सहसा पुनर्वापरण्यायोग्य नसते.', youtubeLink: 'https://www.youtube.com/watch?v=SjB-B1y66lI', class: 'metals', color: '#bdc3c7' },
+                                { name: 'जैव/सेंद्रिय', desc: 'अन्नाचे अवशेष, कॉफी ग्राउंड्स, चहाची पिशवी, बागेतील कचरा. या वस्तूंचे घरी कंपोस्ट केले जाऊ शकते किंवा नगरपालिका कंपोस्टिंग सुविधेकडे नेले जाऊ शकते.', youtubeLink: 'https://www.youtube.com/watch?v=hG6T3U4v14c', class: 'bio-organic', color: '#7d4d29' },
+                                { name: 'उरलेला', desc: 'पुनर्वापर न करता येण्याजोगा, सॅनिटरी कचरा. यात अशा वस्तूंचा समावेश होतो ज्यांचा पुनर्वापर किंवा कंपोस्ट केले जाऊ शकत नाही आणि त्यांना कचराभूमीत पाठवावे लागते. प्रदूषण टाळण्यासाठी योग्य विल्हेवाट महत्त्वाची आहे.', youtubeLink: 'https://www.youtube.com/watch?v=q6K-XhG18qg', class: 'residual', color: '#95a5a6' },
+                                { name: 'ई-कचरा', desc: 'ई-कचऱ्यामध्ये मोबाईल फोन, लॅपटॉप, बॅटरी आणि उपकरणे यांसारख्या टाकाऊ इलेक्ट्रॉनिक वस्तूंचा समावेश होतो. या वस्तूंमध्ये धोकादायक घटक असतात, ज्यांची योग्य विल्हेवाट विशिष्ट संग्रह केंद्रांवर लावली पाहिजे. त्यांना सामान्य कचऱ्यात कधीही टाकू नका कारण ते पर्यावरण आणि मानवी आरोग्याला हानी पोहोचवू शकतात.', youtubeLink: 'https://www.youtube.com/watch?v=tIe4xUo1v1g', class: 'e-waste', color: '#34495e' },
+                                { name: 'धोकादायक कचरा', desc: 'धोकादायक कचरा हा असा कचरा आहे जो मानवी आरोग्यासाठी किंवा पर्यावरणासाठी धोकादायक असतो. यात रसायने, रंग, कीटकनाशके आणि मुदतबाहेर गेलेली औषधे यांचा समावेश होतो. त्यांना सामान्य कचऱ्यात कधीही मिसळू नका. तुम्ही त्यांची योग्य विल्हेवाट तुमच्या परिसरातील धोकादायक कचरा सुविधा केंद्रात लावावी.', youtubeLink: 'https://www.youtube.com/watch?v=4Jj1b5e3XkU', class: 'hazardous', color: '#e74c3c' }
+                            ]
+                        },
+                        mapping: {
+                            heading: 'नाशिकमधील स्थानिक मॅपिंग',
+                            areas: [
+                                'Panchvati', 'Cidco', 'Mhasrul', 'Adgaon', 'Nashik Road', 'Shivaji Nagar', 'Tarwala Nagar'
+                            ],
+                            otherAreas: 'आम्ही या बॉक्सच्या मदतीने अधिक क्षेत्रे जोडून आमच्या सीमा वाढवू.'
+                        }
+                    }
+                }
+            };
+            
+            const langButtons = document.querySelectorAll('.lang-btn');
+            const classificationContentDiv = document.getElementById('classificationContent');
+            const impactContentDiv = document.getElementById('impactContent');
+            const binBenefitsContentDiv = document.getElementById('binBenefitsContent');
+            const advancedContentDiv = document.getElementById('advancedContent');
+
+
+            function updateContent(lang) {
+                // Update Classification Guide Content
+                const classificationData = contentData[lang];
+                classificationContentDiv.innerHTML = `
+                    <h3>${classificationData.recyclables.heading}</h3>
+                    <p>${classificationData.recyclables.content}</p>
+                    <h3>${classificationData.organic.heading}</h3>
+                    <p>${classificationData.organic.content}</p>
+                    <h3>${classificationData.eWaste.heading}</h3>
+                    <p>${classificationData.eWaste.content}</p>
+                    <h3>${classificationData.hazardous.heading}</h3>
+                    <p>${classificationData.hazardous.content}</p>
+                `;
+
+                // Update Impact Content
+                const impactData = contentData[lang].impact;
+                impactContentDiv.innerHTML = `
+                    <h3>${impactData.environmental.heading}</h3>
+                    <p>${impactData.environmental.content}</p>
+                    <h3>${impactData.social.heading}</h3>
+                    <p>${impactData.social.content}</p>
+                    <h3>${impactData.economic.heading}</h3>
+                    <p>${impactData.economic.content}</p>
+                `;
+
+                // Update Bin Benefits Content
+                const binBenefitsData = contentData[lang].binBenefits;
+                let binBenefitsHtml = `
+                    <p>${binBenefitsData.intro}</p>
+                    <ul class="benefits-list">
+                `;
+                binBenefitsData.benefits.forEach(benefit => {
+                    binBenefitsHtml += `
+                        <li class="benefit-item">
+                            <h4>${benefit.heading}</h4>
+                            <p>${benefit.content}</p>
+                        </li>
+                    `;
+                });
+                binBenefitsHtml += `</ul>`;
+                binBenefitsContentDiv.innerHTML = binBenefitsHtml;
+
+                // Update Advanced Guide Content
+                const advancedData = contentData[lang].advanced;
+                let categoriesHtml = `<h3>${advancedData.categories.heading}</h3><ul class="category-list">`;
+                advancedData.categories.items.forEach(item => {
+                    categoriesHtml += `
+                        <li class="category-item ${item.class}">
+                            <h4>${item.name}</h4>
+                            <p>${item.desc}</p>
+                            <a href="${item.youtubeLink}" target="_blank" class="btn">Watch Tutorial</a>
+                        </li>`;
+                });
+                categoriesHtml += `</ul>`;
+                
+                let mappingHtml = `<h3>${advancedData.mapping.heading}</h3><ul class="local-area-list">`;
+                advancedData.mapping.areas.forEach(area => {
+                    mappingHtml += `
+                        <li class="area-box">
+                            <h4>${area}</h4>
+                            <div class="area-buttons">
+                                <button class="btn photo-btn" data-area="${area}">Click Photo</button>
+                                <div class="color-selector">
+                                    <button class="btn color-btn" data-area="${area}">Choose Waste Type</button>
+                                    <div class="color-options" data-area="${area}">
+                                        <div class="color-option circle-blue" data-color="blue" data-type="Paper & Card"></div>
+                                        <div class="color-option circle-yellow" data-color="yellow" data-type="Plastics & Packaging"></div>
+                                        <div class="color-option circle-brown" data-color="brown" data-type="Bio/Organic"></div>
+                                        <div class="color-option circle-green" data-color="green" data-type="Glass"></div>
+                                        <div class="color-option circle-gray" data-color="gray" data-type="Residual"></div>
+                                    </div>
+                                </div>
+                                <button class="btn complain-btn" data-area="${area}" disabled>Complain</button>
+                            </div>
+                            <textarea placeholder="Type your complaint here..." data-area="${area}"></textarea>
+                        </li>
+                    `;
+                });
+                mappingHtml += `
+                    <li class="area-box other-areas-box">
+                        <h4>Other Areas</h4>
+                        <p>${advancedData.mapping.otherAreas}</p>
+                    </li>
+                </ul>`;
+                
+                advancedContentDiv.innerHTML = categoriesHtml + mappingHtml;
+
+                // Re-attach event listeners after dynamic content is added
+                attachAreaButtonListeners();
+                attachColorPickerListeners();
+            }
+
+            function attachAreaButtonListeners() {
+                const photoButtons = document.querySelectorAll('.photo-btn');
+                const complainButtons = document.querySelectorAll('.complain-btn');
+                const complainMessageDiv = document.getElementById('complainMessage');
+
+                photoButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        complainMessageDiv.textContent = 'Photo feature coming soon!';
+                        complainMessageDiv.style.display = 'block';
+                        setTimeout(() => { complainMessageDiv.style.display = 'none'; }, 3000);
+                    });
+                });
+
+                complainButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const area = button.dataset.area;
+                        const selectedType = button.getAttribute('data-selected-type');
+                        const complaintText = document.querySelector(`textarea[data-area="${area}"]`).value;
+                        const complaintMessage = selectedType
+                            ? `Complaint for ${area} (${selectedType}) Registered: ${complaintText}`
+                            : `Complaint for ${area} Registered: ${complaintText}`;
+                        
+                        complainMessageDiv.textContent = complaintMessage;
+                        complainMessageDiv.style.display = 'block';
+                        showConfetti();
+                        setTimeout(() => { complainMessageDiv.style.display = 'none'; }, 3000);
+                    });
+                });
+            }
+
+            function attachColorPickerListeners() {
+                const colorButtons = document.querySelectorAll('.color-btn');
+                colorButtons.forEach(button => {
+                    const area = button.dataset.area;
+                    const optionsContainer = document.querySelector(`.color-options[data-area="${area}"]`);
+                    const complainBtn = document.querySelector(`.complain-btn[data-area="${area}"]`);
+                    
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        // Hide all other color pickers
+                        document.querySelectorAll('.color-options').forEach(opt => {
+                            if (opt !== optionsContainer) {
+                                opt.style.display = 'none';
+                            }
+                        });
+                        optionsContainer.style.display = optionsContainer.style.display === 'flex' ? 'none' : 'flex';
+                    });
+
+                    optionsContainer.querySelectorAll('.color-option').forEach(option => {
+                        option.addEventListener('click', () => {
+                            const selectedType = option.dataset.type;
+                            const selectedColor = option.dataset.color;
+                            
+                            // Remove selected class from all options
+                            optionsContainer.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                            // Add selected class to the clicked option
+                            option.classList.add('selected');
+                            
+                            complainBtn.setAttribute('data-selected-type', selectedType);
+                            complainBtn.disabled = false; // Enable the complain button
+                            button.textContent = selectedType;
+                            optionsContainer.style.display = 'none';
+                        });
+                    });
+                });
+
+                document.addEventListener('click', () => {
+                    document.querySelectorAll('.color-options').forEach(opt => {
+                        opt.style.display = 'none';
+                    });
+                });
+            }
+
+            // Initial content load (English)
+            updateContent('en');
+
+            langButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const sections = document.querySelectorAll('.language-toggle');
+                    sections.forEach(section => {
+                        const buttons = section.querySelectorAll('.lang-btn');
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                    });
+                    
+                    const lang = button.dataset.lang;
+                    updateContent(lang);
+                    
+                    // Set active state for buttons in all toggles
+                    document.querySelectorAll(`.language-toggle button[data-lang="${lang}"]`).forEach(btn => btn.classList.add('active'));
+                });
+            });
+        });
+    </script>
+</body>
+</html>
